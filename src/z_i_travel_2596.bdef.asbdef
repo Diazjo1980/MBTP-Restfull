@@ -1,0 +1,118 @@
+managed;
+//strict ( 2 ); //Uncomment this line in order to enable strict mode 2. The strict mode has two variants (strict(1), strict(2)) and is prerequisite to be future proof regarding syntax and to be able to release your BO.
+
+define behavior for Z_I_TRAVEL_2596 alias Travel
+implementation in class zbp_i_travel_2596 unique
+persistent table ztb_travel_2596
+lock master
+authorization master ( instance )
+etag master LastChangedAt
+{
+
+  mapping for ZTB_TRAVEL_2596
+  {
+
+    TravelId = travel_id;
+    AgencyId = agency_id;
+    CustomerId = customer_id;
+    BeginDate = begin_date;
+    EndDate = end_date;
+    BookingFee = booking_fee;
+    TotalPrice = total_price;
+    CurrencyCode = currency_code;
+    Description = description;
+    TravelStatus = overall_status;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+
+  }
+
+  // Campos para el control estático solo lectura
+  field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy;
+  // Campo obligatorios para la creación de un nuevo registro
+  field ( mandatory ) AgencyId, TravelStatus, BookingFee, CurrencyCode;
+  // Control dinámico para campos
+  field ( features : instance ) TravelId, TravelStatus;
+
+  //Acciones
+  action ( features : instance ) acceptTravel result [1] $self;
+  action ( features : instance ) rejectTravel result [1] $self;
+  action createTravelByTemplate result [1] $self;
+
+  create;
+  update;
+  delete;
+
+  //Validaciones
+  validation validateCustomer on save { field CustomerId; }
+  validation validateDates on save { field BeginDate, EndDate; }
+  validation validateStatus on save { field TravelStatus; }
+
+  association _Booking { create; }
+}
+
+define behavior for Z_I_BOOK_2596 alias Booking
+implementation in class zbp_i_booking_2596 unique
+persistent table ztb_booking_2596
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+{
+
+  mapping for ZTB_BOOKING_2596
+  {
+    TravelId = travel_id;
+    BookingId = booking_id;
+    BookingDate = booking_date;
+    CustomerId = customer_id;
+    CarrierId = carrier_id;
+    ConnectionId = connection_id;
+    FlightDate = flight_date;
+    FlightPrice = flight_price;
+    CurrencyCode = currency_code;
+    BookingStatus = booking_status;
+    LastChangedAt = last_changed_at;
+  }
+  update;
+  delete;
+  // Campos estáticos de control
+  field ( readonly ) TravelId;
+  //Campos obligatorios
+  field ( mandatory ) CarrierId, ConnectionId, FlightDate, BookingStatus;
+  association _Travel;
+
+  //Validaciones
+  validation validateStatus on save { field BookingStatus; }
+
+  //Determinaciones
+  determination calculateTotalFlightPrice on modify { field FlightPrice, CurrencyCode; }
+
+
+  association _BookingSupplement { create; }
+}
+
+define behavior for Z_I_BOOKSUPPL_2596 alias Supplement
+implementation in class zbp_i_supplement_2596 unique
+with unmanaged save
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+{
+
+  mapping for ztb_log_2596 corresponding;
+  update;
+  delete;
+
+  // Campos estáticos de control
+  field ( readonly ) TravelId, BookingId;
+  //Campos obligatorios
+  field ( mandatory ) SupplementId, Price;
+
+  //Determinaciones
+  determination calculateTotalSupplimPrice on modify { field Price, Currency; }
+
+  association _Travel;
+  association _Booking;
+}
