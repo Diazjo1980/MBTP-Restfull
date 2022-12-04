@@ -45,13 +45,13 @@ annotate view Z_C_BOOK_2596 with
   @UI: { lineItem: [ { position: 50, importance: #HIGH } ],
   identification: [ { position: 50 } ] }
   @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Carrier', element: 'AirlineID' }}]
-  CarrierId;
+  carrier_id; //CarrierId;
 
   @UI: { lineItem: [ { position: 60, importance: #HIGH } ],
   identification: [ { position: 60 } ] }
   @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'ConnectionID'},
   additionalBinding: [ { localElement: 'FlightDate', element: 'FlightDate'},
-  { localElement: 'CarrierID', element: 'AirlineID'},
+  { localElement: 'carrier_id', element: 'AirlineID'},
   { localElement: 'FlightPrice', element: 'Price'},
   { localElement: 'CurrencyCode', element: 'CurrencyCode' } ] } ]
   ConnectionId;
@@ -60,7 +60,7 @@ annotate view Z_C_BOOK_2596 with
   identification: [ { position: 70 } ] }
   @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'FlightDate' },
   additionalBinding: [ { localElement: 'ConnectionID', element: 'ConnectionID'},
-  { localElement: 'CarrierID', element: 'AirlineID'},
+  { localElement: 'carrier_id', element: 'AirlineID'},
   { localElement: 'FlightPrice', element: 'Price' },
   { localElement: 'CurrencyCode', element: 'CurrencyCode' }]}]
   FlightDate;

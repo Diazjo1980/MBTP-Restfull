@@ -12,7 +12,7 @@ define view entity Z_C_BOOK_2596
       BookingDate,
       CustomerId,
       @ObjectModel.text.element: ['CarrierName']
-      CarrierId,
+      carrier_id,
       _Carrier.Name as CarrierName,
       ConnectionId,
       FlightDate,

@@ -38,7 +38,7 @@ annotate view Z_C_ABOOK_2596 with
 
   @UI: { lineItem: [ { position: 50, importance: #HIGH } ],
   identification: [ { position: 50 } ] }
-  CarrierId;
+  carrier_id; //CarrierId;
 
   @UI: { lineItem: [ { position: 60, importance: #HIGH } ],
   identification: [ { position: 60 } ] }

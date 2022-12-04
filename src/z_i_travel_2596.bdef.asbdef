@@ -4,6 +4,7 @@ managed;
 define behavior for Z_I_TRAVEL_2596 alias Travel
 implementation in class zbp_i_travel_2596 unique
 persistent table ztb_travel_2596
+with additional save
 lock master
 authorization master ( instance )
 etag master LastChangedAt
@@ -32,7 +33,7 @@ etag master LastChangedAt
   // Campos para el control estático solo lectura
   field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy;
   // Campo obligatorios para la creación de un nuevo registro
-  field ( mandatory ) AgencyId, TravelStatus, BookingFee, CurrencyCode;
+  field ( mandatory : create ) TravelId, AgencyId, TravelStatus, BookingFee, CurrencyCode;
   // Control dinámico para campos
   field ( features : instance ) TravelId, TravelStatus;
 
@@ -46,11 +47,11 @@ etag master LastChangedAt
   delete;
 
   //Validaciones
-  validation validateCustomer on save { field CustomerId; }
-  validation validateDates on save { field BeginDate, EndDate; }
-  validation validateStatus on save { field TravelStatus; }
+  validation validateCustomer on save { create; field CustomerId; }
+  validation validateDates on save { create; field BeginDate, EndDate; }
+  validation validateStatus on save { create; field TravelStatus; }
 
-  association _Booking { create; }
+  association _Booking { create ( features: instance ); }
 }
 
 define behavior for Z_I_BOOK_2596 alias Booking
@@ -67,7 +68,7 @@ etag master LastChangedAt
     BookingId = booking_id;
     BookingDate = booking_date;
     CustomerId = customer_id;
-    CarrierId = carrier_id;
+    carrier_id = carrier_id;
     ConnectionId = connection_id;
     FlightDate = flight_date;
     FlightPrice = flight_price;
@@ -80,17 +81,17 @@ etag master LastChangedAt
   // Campos estáticos de control
   field ( readonly ) TravelId;
   //Campos obligatorios
-  field ( mandatory ) CarrierId, ConnectionId, FlightDate, BookingStatus;
+  field ( mandatory : create ) BookingId, carrier_id, ConnectionId, FlightDate, BookingStatus;
   association _Travel;
 
   //Validaciones
-  validation validateStatus on save { field BookingStatus; }
+  validation validateStatus on save { create; field BookingStatus; }
 
   //Determinaciones
   determination calculateTotalFlightPrice on modify { field FlightPrice, CurrencyCode; }
 
 
-  association _BookingSupplement { create; }
+  association _BookingSupplement { create ( features: instance ); }
 }
 
 define behavior for Z_I_BOOKSUPPL_2596 alias Supplement
@@ -108,7 +109,7 @@ etag master LastChangedAt
   // Campos estáticos de control
   field ( readonly ) TravelId, BookingId;
   //Campos obligatorios
-  field ( mandatory ) SupplementId, Price;
+  field ( mandatory : create ) SupplementId, Price;
 
   //Determinaciones
   determination calculateTotalSupplimPrice on modify { field Price, Currency; }
